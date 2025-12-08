@@ -1,60 +1,46 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PanelControll;
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
 /* Routes for User */
 
-Route::get('/', function () {
-    return view('user.index');
-})->name('index');
+Route::get('/',[MainController::class,'index'])->name('index');
 
-Route::get('/home', function () {
-    return view('user.home');
-})->name('home');
+Route::middleware('auth')->get('/home', [MainController::class,'home'])->name('home');
 
-Route::get('/createAccount', function () {
-    return view('user.createAccount');
-})->name('createAccount');
 
-Route::get('/login', function () {
-    return view('user.login');
-})->name('login');
 
-Route::get('/foundItems', function () {
-    return view('user.foundItems');
-})->name('foundItems');
+Route::get('/createAccount', [AuthController::class, 'register'])->name('createAccount');
 
-Route::get('/lostItems', function () {
-    return view('user.lostItems');
-})->name('lostItems');
+Route::post('/createAcconut', [AuthController::class, 'registerPost'])->name('createAcconutPost');
 
-Route::get('/messages', function () {
-    return view('user.messages');
-})->name('messages');
+Route::get('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/report', function () {
-    return view('user.report');
-})->name('report');
+Route::post('/login', [AuthController::class, 'loginPost'])->name('loginPost');
 
-Route::get('/reportFoundItem', function () {
-    return view('user.reportFoundItem');
-})->name('reportFoundItem');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/reportLostItem', function () {
-    return view('user.reportLostItem');
-})->name('reportLostItem');
+Route::get('/foundItems', [ItemController::class, 'foundItems'])->name('foundItems');
 
-Route::get('/userDashboard', function () {
-    return view('user.userDashboard');
-})->name('userDashboard');
+Route::get('/lostItems', [ItemController::class, 'lostItems'])->name('lostItems');
 
-Route::get('/viewFoundItem', function () {
-    return view('user.viewFoundItem');
-})->name('viewFoundItem');
+Route::get('/messages', [ItemController::class, 'messages'])->name('messages');
 
-Route::get('/viewLostItem', function () {
-    return view('user.viewLostItem');
-})->name('viewLostItem');
+Route::get('/report', [ItemController::class, 'report'])->name('report');
+
+Route::get('/reportFoundItem', [ItemController::class, 'reportFoundItem'])->name('reportFoundItem');
+
+Route::get('/reportLostItem', [ItemController::class, 'reportLostItem'])->name('reportLostItem');
+
+Route::get('/userDashboard', [ItemController::class, 'userDashboard'])->name('userDashboard');
+
+Route::get('/viewFoundItem', [ItemController::class, 'viewFoundItem'])->name('viewFoundItem');
+
+Route::get('/viewLostItem', [ItemController::class, 'viewLostItem'])->name('viewLostItem');
 
 
 
@@ -62,30 +48,13 @@ Route::get('/viewLostItem', function () {
 
 /* Routes for Admin */
 
-Route::get('/adminLogin', function () {
-    return view('admin.login');
-})->name('adminLogin');
+Route::get('/adminLogin', [AuthController::class, 'adminLogin'])->name('adminLogin');
+Route::post('/adminLogin', [AuthController::class, 'adminLoginPost'])->name('adminLoginPost');
 
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
-
-Route::get('/admin/claims', function () {
-    return view('admin.claims');
-})->name('claims');
-
-Route::get('/admin/items', function () {
-    return view('admin.items');
-})->name('items');
-
-Route::get('/admin/users', function () {
-    return view('admin.users');
-})->name('users');
-
-Route::get('/admin/message', function () {
-    return view('admin.message');
-})->name('message');
-
-
-
-
+Route::middleware('admin')->group(function () {
+    Route::get('/admin/dashboard', [PanelControll::class, 'dashboard'])->name('dashboard');
+    Route::get('/admin/claims', [PanelControll::class, 'claims'])->name('claims');
+    Route::get('/admin/items', [PanelControll::class, 'items'])->name('items');
+    Route::get('/admin/users', [PanelControll::class, 'users'])->name('users');
+    Route::get('/admin/message', [PanelControll::class, 'message'])->name('message');
+});

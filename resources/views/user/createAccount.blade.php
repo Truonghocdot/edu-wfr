@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/user.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet">
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -43,22 +45,22 @@
 
                 <!-- Display success and error messages -->
                 @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
                 @endif
 
                 @if($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endif
 
-                <form class="auth-form" action="{{ route('register') }}" method="POST">
+                <form class="auth-form" action="{{ route('loginPost') }}" method="POST">
                     @csrf
 
                     <label for="name">Full Name</label>
@@ -88,4 +90,5 @@
 
     <script src="{{ asset('js/admin.js') }}" type="module"></script>
 </body>
+
 </html>
