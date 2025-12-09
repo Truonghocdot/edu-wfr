@@ -13,10 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
 
-    <link href="
-https://cdn.jsdelivr.net/npm/sweetalert2@11.26.4/dist/sweetalert2.min.css
-" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
 </head>
 
 <body>
@@ -38,7 +35,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.26.4/dist/sweetalert2.min.css
                             </svg>
                             <span>Home</span>
                         </a>
-                        <a href="#" class="active">
+                        <a href="{{ route('claims') }}" class="active">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                                 <path d="M6 4V8H18V4H20.0066C20.5552 4 21 4.44495 21 4.9934V21.0066C21 21.5552 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5551 3 21.0066V4.9934C3 4.44476 3.44495 4 3.9934 4H6ZM9 17H7V19H9V17ZM9 14H7V16H9V14ZM9 11H7V13H9V11ZM16 2V6H8V2H16Z"></path>
                             </svg>
@@ -67,10 +64,9 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.26.4/dist/sweetalert2.min.css
             </div>
 
             <div class="user-account">
-                <a href="#">
-                    <!-- Icon removed, only text will be displayed -->
+                <a href="{{ route('logout') }}" style="text-decoration: none; color: inherit;">
+                    <span class="username">Logout</span>
                 </a>
-                <span class="username">Logout</span> <!-- Only the username remains -->
             </div>
         </aside>
 
@@ -94,36 +90,40 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.26.4/dist/sweetalert2.min.css
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#001</td>
-                                <td>Black Wallet</td>
-                                <td>John Doe</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>
-                                    <button class="btn approve">Approve</button>
-                                    <button class="btn reject">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#002</td>
-                                <td>Red Umbrella</td>
-                                <td>Jane Smith</td>
-                                <td><span class="status approved">Approved</span></td>
-                                <td>
-                                    <button class="btn approve">Approve</button>
-                                    <button class="btn reject">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#003</td>
-                                <td>USB Flash Drive</td>
-                                <td>Mark Lee</td>
-                                <td><span class="status rejected">Rejected</span></td>
-                                <td>
-                                    <button class="btn approve">Approve</button>
-                                    <button class="btn reject">Reject</button>
-                                </td>
-                            </tr>
+                            @forelse($claims as $claim)
+                                <tr>
+                                    <td>#{{ $claim->id }}</td>
+                                    <td>{{ $claim->item->title }}</td>
+                                    <td>{{ $claim->user->name }}</td>
+                                    <td>
+                                        @if($claim->status === 'pending')
+                                            <span class="status pending">Pending</span>
+                                        @elseif($claim->status === 'approved')
+                                            <span class="status approved">Approved</span>
+                                        @else
+                                            <span class="status rejected">Rejected</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($claim->status === 'pending')
+                                            <form action="{{ route('approveClaim', $claim->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn approve">Approve</button>
+                                            </form>
+                                            <form action="{{ route('rejectClaim', $claim->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn reject">Reject</button>
+                                            </form>
+                                        @else
+                                            <span style="color: #999;">No action</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 20px; color: #999;">No claims found</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -132,7 +132,6 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.26.4/dist/sweetalert2.min.css
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="{{ asset('js/admin.js') }}"></script>
 </body>
 

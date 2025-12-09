@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" /> 
 
-    <link rel="stylesheet" href="../../node_modules/sweetalert2/dist/sweetalert2.min.css">
-    <script src="../../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 </head>
 <body>
     <div class="dashboard">
@@ -53,34 +51,57 @@
             </div>
         
             <div class="user-account">
-            <a href="#">
-        <!-- Icon removed, only text will be displayed -->
-            </a>
-            <span class="username">Logout</span> <!-- Only the username remains -->
+            @auth
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="username">{{ Auth::user()->name }}</span>
+                    <a href="{{ route('logout') }}" style="color: #666; text-decoration: none;">Logout</a>
+                </div>
+            @endauth
             </div>
         </aside>
 
     <!-- Main Content -->
-            <main class="messages-hero">
-      <div class="messages-container">
-        <h1 class="page-title">Messages</h1>
+        <main class="main-content">
+            <header>
+                <h1>Messages</h1>
+                <p>View all system notifications and communications</p>
+            </header>
 
-        <section class="messages-card">
-          <h2 class="card-heading">Conversations</h2>
+            <section class="table">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($messages as $message)
+                                <tr style="background-color: {{ $message->is_read ? '#fff' : '#f9f9ff' }};">
+                                    <td>#{{ $message->id }}</td>
+                                    <td>{{ $message->sender->name }}</td>
+                                    <td>{{ $message->recipient->name }}</td>
+                                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ Str::limit($message->body, 50) }}</td>
+                                    <td><span class="badge {{ $message->is_read ? 'badge-success' : 'badge-warning' }}">{{ $message->is_read ? 'Read' : 'Unread' }}</span></td>
+                                    <td>{{ $message->created_at->format('d/m/Y H:i') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">No messages found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    {{ $messages->links() }}
+                </div>
+            </section>
 
-          <article class="conv">
-            <div class="avatar">J</div>
-            <div class="conv-main">
-              <div class="conv-name">JiaBoy</div>
-              <div class="conv-snippet">
-                Jiaboy: Your claim has been approved.
-                <span class="unread">1</span>
-              </div>
-            </div>
-          </article>
-        </section>
-      </div>
-    </main>
+        </main>
     
 
     <script type="module" src="{{ asset('js/admin.js') }}"></script>

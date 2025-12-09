@@ -25,7 +25,7 @@
 
                 <nav class="nav-links">
                     <div class="links">
-                        <a href="#" class="active">
+                        <a href="{{ route('dashboard') }}" class="active">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V11L1 11L11.3273 1.6115C11.7087 1.26475 12.2913 1.26475 12.6727 1.6115L23 11L20 11V20ZM11 13V19H13V13H11Z"></path></svg>
                         <span>Home</span>
                         </a>
@@ -50,10 +50,9 @@
             </div>
         
             <div class="user-account">
-            <a href="#">
-        <!-- Icon removed, only text will be displayed -->
-            </a>
-            <span class="username">Logout</span> <!-- Only the username remains -->
+                <a href="{{ route('logout') }}" style="text-decoration: none; color: inherit;">
+                    <span class="username">Logout</span>
+                </a>
             </div>
 
         </aside>
@@ -68,15 +67,46 @@
             <section class="stats">
                 <div class="card">
                     <h2>Total Users</h2>
-                    <div class="stat-value">20</div>
-                    <p>Registered Students</p>
+                    <div class="stat-value">{{ $totalUsers }}</div>
+                    <p>Registered Users</p>
                 </div>
 
                 <div class="card">
                     <h2>Total Items</h2>
-                    <div class="stat-value">1</div>
+                    <div class="stat-value">{{ $totalItems }}</div>
                     <p>Lost and Found Items</p>
                 </div>
+
+                <div class="card">
+                    <h2>Lost Items</h2>
+                    <div class="stat-value">{{ $lostItems }}</div>
+                    <p>Items reported lost</p>
+                </div>
+
+                <div class="card">
+                    <h2>Found Items</h2>
+                    <div class="stat-value">{{ $foundItems }}</div>
+                    <p>Items reported found</p>
+                </div>
+
+                <div class="card">
+                    <h2>Pending Claims</h2>
+                    <div class="stat-value">{{ $pendingClaims }}</div>
+                    <p>Awaiting approval</p>
+                </div>
+
+                <div class="card">
+                    <h2>Total Claims</h2>
+                    <div class="stat-value">{{ $totalClaims }}</div>
+                    <p>All claims</p>
+                </div>
+
+                <div class="card">
+                    <h2>Resolved Items</h2>
+                    <div class="stat-value">{{ $resolvedItems }}</div>
+                    <p>Successfully resolved</p>
+                </div>
+            </section>
 
                 <div class="card">
                     <h2>Pending Claims</h2>

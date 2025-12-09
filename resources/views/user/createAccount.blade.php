@@ -60,17 +60,17 @@
                 </div>
                 @endif
 
-                <form class="auth-form" action="{{ route('loginPost') }}" method="POST">
+                <form class="auth-form" action="{{ route('createAccountPost') }}" method="POST">
                     @csrf
 
                     <label for="name">Full Name</label>
-                    <input id="name" name="name" type="text" placeholder="Enter full name" required />
+                    <input id="name" name="name" type="text" placeholder="Enter full name" required value="{{ old('name') }}" />
 
-                    <label for="studentId">Student ID</label>
-                    <input id="studentId" name="student_id" type="text" placeholder="Enter student ID" required />
+                    <label for="phone">Phone</label>
+                    <input id="phone" name="phone" type="tel" placeholder="Enter phone number" required value="{{ old('phone') }}" />
 
                     <label for="email">Email</label>
-                    <input id="email" name="email" type="email" placeholder="Enter email" required />
+                    <input id="email" name="email" type="email" placeholder="Enter email" required value="{{ old('email') }}" />
 
                     <label for="password">Password</label>
                     <input id="password" name="password" type="password" placeholder="Enter password" required />

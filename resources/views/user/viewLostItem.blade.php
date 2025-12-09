@@ -43,25 +43,37 @@
           <li><a href="{{ route('messages') }}">Messages</a></li>
         </ul>
         <div class="nav-user">
-          <img
-            src="{{ asset('assets/icon/user-icon.png') }}"
-            alt="User Avatar"
-            class="user-avatar"
-            width="20"
-            height="20"
-            onclick="location.href='userDashboard'"
-          />
-          <span class="user-name">JiaBoy</span>
-          <button type="button" class="logout-btn" onclick="location.href='createAccount'">
+          @auth
             <img
-              src="{{ asset('assets/icon/doorIcon.jpg') }}"
-              alt=""
-              class="logout-icon"
-              width="18"
-              height="18"
+              src="{{ asset('assets/icon/user-icon.png') }}"
+              alt="User Avatar"
+              class="user-avatar"
+              width="20"
+              height="20"
             />
-            Log Out
-          </button>
+            <span class="user-name">{{ Auth::user()->name }}</span>
+            <a href="{{ route('logout') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log Out
+            </a>
+          @else
+            <a href="{{ route('login') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log In
+            </a>
+          @endauth
         </div>
       </nav>
     </header>
@@ -77,32 +89,63 @@
 
           <div class="detail-grid">
             <div class="detail-media">
-              <img src="{{ asset('assets/sample/iphone16.jpg') }}" alt="Lost item photo" />
+              @if($item->image_path)
+                <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->title }}" />
+              @else
+                <img src="{{ asset('assets/sample/placeholder.jpg') }}" alt="No image" />
+              @endif
             </div>
 
             <div class="detail-info">
               <div class="meta triple">
                 <div class="meta-block">
                   <div class="meta-label">Location</div>
-                  <div class="meta-value">Library</div>
+                  <div class="meta-value">{{ $item->location }}</div>
                 </div>
                 <div class="meta-block">
                   <div class="meta-label">Lost on</div>
-                  <div class="meta-value strong">10/01/2024</div>
+                  <div class="meta-value strong">{{ $item->date_reported->format('d/m/Y') }}</div>
                 </div>
                 <div class="meta-block">
                   <div class="meta-label">Reported by</div>
-                  <div class="meta-value strong">JiaBoy</div>
+                  <div class="meta-value strong">{{ $item->user->name }}</div>
                 </div>
               </div>
 
               <div class="description">
-                <div class="meta-label">Description</div>
-                <div class="desc-value">
-                  <span class="strong">New gray</span><br />
-                  <span class="strong">iPhone 6</span>
-                </div>
+                <div class="meta-label">Item Name</div>
+                <h2 style="font-size: 28px; margin: 10px 0;">{{ $item->title }}</h2>
               </div>
+
+              <div class="description">
+                <div class="meta-label">Category</div>
+                <p>{{ $item->category }}</p>
+              </div>
+
+              <div class="description">
+                <div class="meta-label">Description</div>
+                <p>{{ $item->description }}</p>
+              </div>
+
+              <div class="description">
+                <div class="meta-label">Status</div>
+                <p style="text-transform: capitalize; font-weight: bold;">{{ $item->status }}</p>
+              </div>
+
+              @auth
+                @if($item->user_id !== Auth::id())
+                  <form method="POST" action="{{ route('createClaim', $item->id) }}" style="margin-top: 20px;">
+                    @csrf
+                    <textarea name="message" placeholder="Optional: Tell them why you found this item..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; font-family: inherit;"></textarea>
+                    <button type="submit" class="action-btn" style="width: 100%; background: #007bff; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer;">
+                      I found this item
+                    </button>
+                  </form>
+                @endif
+              @else
+                <p style="color: #999; margin-top: 20px;"><a href="{{ route('login') }}">Login</a> if you found this item</p>
+              @endauth
+            </div>
 
               <div class="cta-row">
                 <button type="button" class="message-btn">

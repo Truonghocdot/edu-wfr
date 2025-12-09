@@ -42,25 +42,37 @@
           <li><a href="{{ route('messages') }}">Messages</a></li>
         </ul>
         <div class="nav-user">
-          <img
-            src="{{ asset('assets/icon/user-icon.png') }}"
-            alt="User Avatar"
-            class="user-avatar"
-            width="20"
-            height="20"
-            onclick="location.href='userDashboard'"
-          />
-          <span class="user-name">JiaBoy</span>
-          <button type="button" class="logout-btn" onclick="location.href='createAccount'">
+          @auth
             <img
-              src="{{ asset('assets/icon/doorIcon.jpg') }}"
-              alt=""
-              class="logout-icon"
-              width="18"
-              height="18"
+              src="{{ asset('assets/icon/user-icon.png') }}"
+              alt="User Avatar"
+              class="user-avatar"
+              width="20"
+              height="20"
             />
-            Log Out
-          </button>
+            <span class="user-name">{{ Auth::user()->name }}</span>
+            <a href="{{ route('logout') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log Out
+            </a>
+          @else
+            <a href="{{ route('login') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log In
+            </a>
+          @endauth
         </div>
       </nav>
     </header>
@@ -94,37 +106,48 @@
           </div>
         </section>
 
-        <p class="results-hint">Showing 1 of 1 lost item</p>
+        <p class="results-hint">Showing {{ $items->count() }} of {{ $items->total() }} lost items</p>
 
         <section class="cards">
-          <article class="item-card">
-            <div class="media">
-              <img src="{{ asset('assets/sample/iphone16.jpg') }}" alt="iPhone 6" />
-            </div>
-            <div class="content">
-              <div class="meta-row">
-                <span class="tag tag-lost">Lost</span>
-                <span class="tag tag-muted">Electronics</span>
+          @forelse($items as $item)
+            <article class="item-card">
+              <div class="media">
+                @if($item->image_path)
+                  <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->title }}" />
+                @else
+                  <img src="{{ asset('assets/sample/placeholder.jpg') }}" alt="No image" />
+                @endif
               </div>
-              <h3 class="item-title">iPhone 6</h3>
-              <div class="details">
-                <div>Library</div>
-                <div>Lost on 10/1/2024</div>
-                <div>By Allyssa Palen</div>
+              <div class="content">
+                <div class="meta-row">
+                  <span class="tag tag-lost">Lost</span>
+                  <span class="tag tag-muted">{{ $item->category }}</span>
+                </div>
+                <h3 class="item-title">{{ $item->title }}</h3>
+                <div class="details">
+                  <div>{{ $item->location }}</div>
+                  <div>Lost on {{ $item->date_reported->format('d/m/Y') }}</div>
+                  <div>By {{ $item->user->name }}</div>
+                </div>
+                <div class="actions">
+                  <a href="{{ route('viewLostItem', $item->id) }}" class="view-btn">
+                    <i class="ri-eye-line"></i>
+                    View
+                  </a>
+                </div>
               </div>
-              <div class="actions">
-                <button
-                  class="view-btn"
-                  type="button"
-                  onclick="location.href='viewLostItem'"
-                >
-                  <i class="ri-eye-line"></i>
-                  View
-                </button>
-              </div>
-            </div>
-          </article>
+            </article>
+          @empty
+            <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
+              No lost items available
+            </p>
+          @endforelse
         </section>
+
+        <!-- Pagination -->
+        <div style="margin-top: 30px; text-align: center;">
+          {{ $items->links() }}
+        </div>
       </div>
     </main>
 

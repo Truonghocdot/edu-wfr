@@ -51,11 +51,21 @@
             </div>
 
             <!-- Updated Form with POST method -->
-            <form class="auth-form" action="{{ url('/login') }}" method="post">
-              @csrf <!-- CSRF protection for security -->
+            <form class="auth-form" action="{{ route('loginPost') }}" method="POST">
+              @csrf
+
+              @if($errors->any())
+              <div class="alert alert-danger">
+                <ul>
+                  @foreach($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+              @endif
               
-              <label for="identifier">Email or Student ID</label>
-              <input id="identifier" name="identifier" type="text" required />
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required value="{{ old('email') }}" />
 
               <label for="password">Password</label>
               <input id="password" name="password" type="password" required />

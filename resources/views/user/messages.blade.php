@@ -41,30 +41,42 @@
           <li><a href="{{ route('report') }}">Report Item</a></li>
           <li>
             <a class="active" href="{{ route('messages') }}"
-              >Messages<span class="sup">1</span></a
+              >Messages@if($unreadCount > 0)<span class="sup">{{ $unreadCount }}</span>@endif</a
             >
           </li>
         </ul>
         <div class="nav-user">
-          <img
-            src="{{ asset('assets/icon/user-icon.png') }}"
-            alt="User Avatar"
-            class="user-avatar"
-            width="20"
-            height="20"
-            onclick="location.href='userDashboard'"
-          />
-          <span class="user-name">JiaBoy</span>
-          <button type="button" class="logout-btn" onclick="location.href='createAccount'">
+          @auth
             <img
-              src="{{ asset('assets/icon/doorIcon.jpg') }}"
-              alt=""
-              class="logout-icon"
-              width="18"
-              height="18"
+              src="{{ asset('assets/icon/user-icon.png') }}"
+              alt="User Avatar"
+              class="user-avatar"
+              width="20"
+              height="20"
             />
-            Log Out
-          </button>
+            <span class="user-name">{{ Auth::user()->name }}</span>
+            <a href="{{ route('logout') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log Out
+            </a>
+          @else
+            <a href="{{ route('login') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log In
+            </a>
+          @endauth
         </div>
       </nav>
     </header>

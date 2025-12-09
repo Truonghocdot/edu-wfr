@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" /> 
 
-    <link rel="stylesheet" href="../../node_modules/sweetalert2/dist/sweetalert2.min.css">
-    <script src="../../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
 </head>
 <body>
     <div class="dashboard">
@@ -36,7 +34,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 4V8H18V4H20.0066C20.5552 4 21 4.44495 21 4.9934V21.0066C21 21.5552 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5551 3 21.0066V4.9934C3 4.44476 3.44495 4 3.9934 4H6ZM9 17H7V19H9V17ZM9 14H7V16H9V14ZM9 11H7V13H9V11ZM16 2V6H8V2H16Z"></path></svg>
                             <span>Claims</span>
                         </a>
-                        <a href="#" class="active">
+                        <a href="{{ route('items') }}" class="active">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 1 21.5 6.5V17.5L13 22.4211V11.4234L3.49793 5.92225 12 1ZM2.5 7.6555V17.5L11 22.4211V12.5765L2.5 7.6555Z"></path></svg>
                             <span>Items</span>
                         </a>
@@ -53,10 +51,9 @@
             </div>
         
             <div class="user-account">
-            <a href="#">
-        <!-- Icon removed, only text will be displayed -->
-            </a>
-            <span class="username">Logout</span> <!-- Only the username remains -->
+                <a href="{{ route('logout') }}" style="text-decoration: none; color: inherit;">
+                    <span class="username">Logout</span>
+                </a>
             </div>
         </aside>
 
@@ -83,32 +80,42 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#001</td>
-                                <td>iPhone 6</td>
-                                <td>Electronics</td>
-                                <td>Lost</td>
-                                <td>Library</td>
-                                <td>10/01/2024</td>
-                                <td><span class="status pending">Active</span></td>
-                                <td>
-                                    <button class="btn view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3ZM12.0003 19C16.2359 19 19.8603 16.052 20.7777 12C19.8603 7.94803 16.2359 5 12.0003 5C7.7646 5 4.14022 7.94803 3.22278 12C4.14022 16.052 7.7646 19 12.0003 19ZM12.0003 16.5C9.51498 16.5 7.50026 14.4853 7.50026 12C7.50026 9.51472 9.51498 7.5 12.0003 7.5C14.4855 7.5 16.5003 9.51472 16.5003 12C16.5003 14.4853 14.4855 16.5 12.0003 16.5ZM12.0003 14.5C13.381 14.5 14.5003 13.3807 14.5003 12C14.5003 10.6193 13.381 9.5 12.0003 9.5C10.6196 9.5 9.50026 10.6193 9.50026 12C9.50026 13.3807 10.6196 14.5 12.0003 14.5Z"></path></svg>
-                                    </button>
-                                    <button class="btn delete">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M4 8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8ZM7 5V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V5H22V7H2V5H7ZM9 4V5H15V4H9ZM9 12V18H11V12H9ZM13 12V18H15V12H13Z"></path></svg>
-                                    </button>
-                                </td>
-                            </tr>
+                            @forelse($items as $item)
+                                <tr>
+                                    <td>#{{ $item->id }}</td>
+                                    <td>{{ $item->title }}</td>
+                                    <td>{{ $item->category }}</td>
+                                    <td><span class="badge {{ $item->type === 'lost' ? 'badge-danger' : 'badge-success' }}">{{ ucfirst($item->type) }}</span></td>
+                                    <td>{{ $item->location }}</td>
+                                    <td>{{ $item->date_reported->format('d/m/Y') }}</td>
+                                    <td><span class="status {{ $item->status }}">{{ ucfirst($item->status) }}</span></td>
+                                    <td>
+                                        <a href="{{ $item->type === 'found' ? route('viewFoundItem', $item->id) : route('viewLostItem', $item->id) }}" class="btn view" title="View">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3ZM12.0003 19C16.2359 19 19.8603 16.052 20.7777 12C19.8603 7.94803 16.2359 5 12.0003 5C7.7646 5 4.14022 7.94803 3.22278 12C4.14022 16.052 7.7646 19 12.0003 19ZM12.0003 16.5C9.51498 16.5 7.50026 14.4853 7.50026 12C7.50026 9.51472 9.51498 7.5 12.0003 7.5C14.4855 7.5 16.5003 9.51472 16.5003 12C16.5003 14.4853 14.4855 16.5 12.0003 16.5ZM12.0003 14.5C13.381 14.5 14.5003 13.3807 14.5003 12C14.5003 10.6193 13.381 9.5 12.0003 9.5C10.6196 9.5 9.50026 10.6193 9.50026 12C9.50026 13.3807 10.6196 14.5 12.0003 14.5Z"></path></svg>
+                                        </a>
+                                        <form action="{{ route('adminDeleteItem', $item->id) }}" method="POST" class="d-inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn delete" title="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M4 8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8ZM7 5V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V5H22V7H2V5H7ZM9 4V5H15V4H9ZM9 12V18H11V12H9ZM13 12V18H15V12H13Z"></path></svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">No items found</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                    {{ $items->links() }}
                 </div>
             </section>
 
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="{{ asset('js/admin.js') }}"></script>
 
 </body>

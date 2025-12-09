@@ -42,25 +42,37 @@
           <li><a href="{{ route('messages') }}">Messages</a></li>
         </ul>
         <div class="nav-user">
-          <img
-            src="{{ asset('assets/icon/user-icon.png') }}"
-            alt="User Avatar"
-            class="user-avatar"
-            width="20"
-            height="20"
-            onclick="location.href='userDashboard'"
-          />
-          <span class="user-name">JiaBoy</span>
-          <button type="button" class="logout-btn" onclick="location.href='createAccount'">
+          @auth
             <img
-              src="{{ asset('assets/icon/doorIcon.jpg') }}"
-              alt=""
-              class="logout-icon"
-              width="18"
-              height="18"
+              src="{{ asset('assets/icon/user-icon.png') }}"
+              alt="User Avatar"
+              class="user-avatar"
+              width="20"
+              height="20"
             />
-            Log Out
-          </button>
+            <span class="user-name">{{ Auth::user()->name }}</span>
+            <a href="{{ route('logout') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log Out
+            </a>
+          @else
+            <a href="{{ route('login') }}" class="logout-btn">
+              <img
+                src="{{ asset('assets/icon/doorIcon.jpg') }}"
+                alt=""
+                class="logout-icon"
+                width="18"
+                height="18"
+              />
+              Log In
+            </a>
+          @endauth
         </div>
       </nav>
     </header>
@@ -79,32 +91,44 @@
 
           <form
             class="form-grid"
-            action="#"
-            method="post"
+            action="{{ route('storeLostItem') }}"
+            method="POST"
             enctype="multipart/form-data"
           >
+            @csrf
+
+            @if($errors->any())
+              <div style="grid-column: 1/-1; background: #fee; padding: 10px; border-radius: 4px; color: #c33;">
+                <ul style="margin: 0; padding-left: 20px;">
+                  @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
             <div class="left-col">
-              <label class="field-label" for="itemName"
+              <label class="field-label" for="title"
                 >Item Name<span class="req">*</span></label
               >
               <input
-                id="itemName"
-                name="itemName"
+                id="title"
+                name="title"
                 type="text"
                 placeholder="e.g., iPhone 6, Backpack, Book"
                 required
+                value="{{ old('title') }}"
               />
 
               <label class="field-label" for="category"
                 >Category<span class="req">*</span></label
               >
-              <select id="category" name="category" required>
+              <select id="category" name="category" required value="{{ old('category') }}">
                 <option value="" selected disabled>Select a category</option>
                 <option>Electronics</option>
                 <option>Clothing</option>
                 <option>Accessories</option>
-                <option>ID / Documents</option>
-                <option>Others</option>
+                <option>Documents</option>
+                <option>Other</option>
               </select>
 
               <label class="field-label" for="description"
@@ -116,25 +140,18 @@
                 rows="3"
                 placeholder="Provide a detailed description"
                 required
-              ></textarea>
+              >{{ old('description') }}</textarea>
 
               <label class="field-label" for="location"
                 >Location<span class="req">*</span> (Where did you lose
                 it?)</label
               >
-              <select id="location" name="location" required>
-                <option value="" selected disabled>Select a location</option>
-                <option>Library</option>
-                <option>Cafeteria</option>
-                <option>Gym</option>
-                <option>Parking</option>
-                <option>Classroom</option>
-              </select>
+              <input id="location" name="location" type="text" placeholder="e.g., Library, Cafeteria" required value="{{ old('location') }}" />
 
-              <label class="field-label" for="dateLost"
+              <label class="field-label" for="date_reported"
                 >Date<span class="req">*</span> (When did you lose it?)</label
               >
-              <input id="dateLost" name="dateLost" type="date" required />
+              <input id="date_reported" name="date_reported" type="date" required value="{{ old('date_reported') }}" />
             </div>
 
             <div class="right-col">
@@ -144,8 +161,8 @@
                 </div>
                 <label class="upload-area">
                   <input
-                    id="photo"
-                    name="photo"
+                    id="image"
+                    name="image"
                     type="file"
                     accept=".png,.jpg,.jpeg,.gif"
                     hidden
@@ -154,27 +171,18 @@
                     ><b class="linkish">Upload a photo</b> or drag and
                     drop</span
                   >
-                  <small>PNG, JPG, GIF up to 10MB</small>
+                  <small>PNG, JPG, GIF up to 2MB</small>
                 </label>
               </div>
-
-              <label class="field-label" for="contactInfo"
-                >Additional Contact Information
-                <span class="opt">(Optional)</span></label
-              >
-              <input
-                id="contactInfo"
-                name="contactInfo"
-                type="text"
-                placeholder="Cellphone number, Email, Social Media"
-              />
 
               <label class="checkbox">
                 <input type="checkbox" id="anonymous" name="anonymous" />
                 <span
-                  >Post anonymously (your name won’t be shown publicly)</span
+                  >Post anonymously (your name won't be shown publicly)</span
                 >
               </label>
+
+              <button class="report-btn" type="submit">Report Item</button>
 
               <button class="report-btn" type="submit">Report Item</button>
             </div>
