@@ -20,27 +20,61 @@ class ItemController extends Controller
     // }
 
     /**
-     * Get all found items
+     * Get all found items with search and filter
      */
-    public function foundItems()
+    public function foundItems(Request $request)
     {
-        $items = Item::where('type', 'found')
-            ->where('status', 'open')
-            ->latest()
-            ->paginate(12);
+        $query = Item::where('type', 'found')
+            ->where('status', 'open');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->input('category'));
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location', 'like', "%" . $request->input('location') . "%");
+        }
+
+        $items = $query->latest()->paginate(12)->withQueryString();
 
         return view('user.foundItems', compact('items'));
     }
 
     /**
-     * Get all lost items
+     * Get all lost items with search and filter
      */
-    public function lostItems()
+    public function lostItems(Request $request)
     {
-        $items = Item::where('type', 'lost')
-            ->where('status', 'open')
-            ->latest()
-            ->paginate(12);
+        $query = Item::where('type', 'lost')
+            ->where('status', 'open');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->input('category'));
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location', 'like', "%" . $request->input('location') . "%");
+        }
+
+        $items = $query->latest()->paginate(12)->withQueryString();
 
         return view('user.lostItems', compact('items'));
     }
@@ -166,6 +200,33 @@ class ItemController extends Controller
         $unreadCount = Message::where('recipient_id', $user->id)->unread()->count();
 
         return view('user.messages', compact('messages', 'unreadCount'));
+    }
+
+    /**
+     * Send a new message (Push Message)
+     */
+    public function sendMessage(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'message' => 'required|string|max:1000',
+        ]);
+
+        $recipient = \App\Models\User::where('email', $validated['email'])->first();
+
+        if ($recipient->id === Auth::id()) {
+            \app('flasher')->addError('You cannot send a message to yourself.');
+            return redirect()->back();
+        }
+
+        Message::create([
+            'sender_id' => Auth::id(),
+            'recipient_id' => $recipient->id,
+            'body' => $validated['message'],
+        ]);
+
+        \app('flasher')->addSuccess('Message sent successfully.');
+        return redirect()->back();
     }
 
     /**

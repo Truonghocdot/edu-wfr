@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\PanelControll;
+use App\Http\Controllers\PanelController;
 use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +20,7 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 
 Route::post('/login', [AuthController::class, 'loginPost'])->name('loginPost');
 
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 /* Found Items Routes */
 Route::get('/foundItems', [ItemController::class, 'foundItems'])->name('foundItems');
@@ -33,15 +33,16 @@ Route::get('/viewLostItem/{id}', [ItemController::class, 'viewLostItem'])->name(
 /* Authenticated User Routes */
 Route::middleware('auth')->group(function () {
     Route::get('/userDashboard', [ItemController::class, 'userDashboard'])->name('userDashboard');
-    
+
     Route::get('/reportFoundItem', [ItemController::class, 'reportFoundItem'])->name('reportFoundItem');
     Route::post('/reportFoundItem', [ItemController::class, 'storeFoundItem'])->name('storeFoundItem');
-    
+
     Route::get('/reportLostItem', [ItemController::class, 'reportLostItem'])->name('reportLostItem');
     Route::post('/reportLostItem', [ItemController::class, 'storeLostItem'])->name('storeLostItem');
-    
+
     Route::get('/messages', [ItemController::class, 'messages'])->name('messages');
-    
+    Route::post('/messages/send', [ItemController::class, 'sendMessage'])->name('sendMessage');
+
     Route::get('/report', [ItemController::class, 'report'])->name('report');
 
     // Claim routes
@@ -55,13 +56,13 @@ Route::get('/adminLogin', [AuthController::class, 'adminLogin'])->name('adminLog
 Route::post('/adminLogin', [AuthController::class, 'adminLoginPost'])->name('adminLoginPost');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/admin', [PanelControll::class, 'dashboard'])->name('dashboard');
-    Route::get('/admin/claims', [PanelControll::class, 'claims'])->name('claims');
-    Route::post('/admin/claims/{claim}/approve', [PanelControll::class, 'approveClaim'])->name('approveClaim');
-    Route::post('/admin/claims/{claim}/reject', [PanelControll::class, 'rejectClaim'])->name('rejectClaim');
-    Route::get('/admin/items', [PanelControll::class, 'items'])->name('items');
-    Route::delete('/admin/items/{item}', [PanelControll::class, 'deleteItem'])->name('adminDeleteItem');
-    Route::get('/admin/users', [PanelControll::class, 'users'])->name('users');
-    Route::post('/admin/users/{user}/role', [PanelControll::class, 'updateUserRole'])->name('updateUserRole');
-    Route::get('/admin/message', [PanelControll::class, 'message'])->name('message');
+    Route::get('/admin', [PanelController::class, 'dashboard'])->name('dashboard');
+    Route::get('/admin/claims', [PanelController::class, 'claims'])->name('claims');
+    Route::post('/admin/claims/{claim}/approve', [PanelController::class, 'approveClaim'])->name('approveClaim');
+    Route::post('/admin/claims/{claim}/reject', [PanelController::class, 'rejectClaim'])->name('rejectClaim');
+    Route::get('/admin/items', [PanelController::class, 'items'])->name('items');
+    Route::delete('/admin/items/{item}', [PanelController::class, 'deleteItem'])->name('adminDeleteItem');
+    Route::get('/admin/users', [PanelController::class, 'users'])->name('users');
+    Route::post('/admin/users/{user}/role', [PanelController::class, 'updateUserRole'])->name('updateUserRole');
+    Route::get('/admin/message', [PanelController::class, 'message'])->name('message');
 });

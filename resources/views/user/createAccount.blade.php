@@ -23,7 +23,7 @@
             <ul class="nav-links">
                 <li><a href="{{ route('index') }}">Home</a></li>
                 <li><a href="{{ route('lostItems') }}">Lost Items</a></li>
-                <li><a href="#">Found Items</a></li>
+                <li><a href="{{ route('foundItems') }}">Found Items</a></li>
             </ul>
         </nav>
     </header>
@@ -44,39 +44,47 @@
                 </div>
 
                 <!-- Display success and error messages -->
-                @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
                 @endif
 
-                @if($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
 
                 <form class="auth-form" action="{{ route('createAccountPost') }}" method="POST">
                     @csrf
 
                     <label for="name">Full Name</label>
-                    <input id="name" name="name" type="text" placeholder="Enter full name" required value="{{ old('name') }}" />
+                    <input id="name" name="name" type="text" placeholder="Enter full name" required
+                        value="{{ old('name') }}" />
+
+                    <label for="student_id">Student ID</label>
+                    <input id="student_id" name="student_id" type="text" placeholder="Enter student ID" required
+                        value="{{ old('student_id') }}" />
 
                     <label for="phone">Phone</label>
-                    <input id="phone" name="phone" type="tel" placeholder="Enter phone number" required value="{{ old('phone') }}" />
+                    <input id="phone" name="phone" type="tel" placeholder="Enter phone number" required
+                        value="{{ old('phone') }}" />
 
                     <label for="email">Email</label>
-                    <input id="email" name="email" type="email" placeholder="Enter email" required value="{{ old('email') }}" />
+                    <input id="email" name="email" type="email" placeholder="Enter email" required
+                        value="{{ old('email') }}" />
 
                     <label for="password">Password</label>
                     <input id="password" name="password" type="password" placeholder="Enter password" required />
 
                     <label for="password_confirmation">Confirm Password</label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" placeholder="Confirm password" required />
+                    <input id="password_confirmation" name="password_confirmation" type="password"
+                        placeholder="Confirm password" required />
 
                     <button class="submit-btn" type="submit">Create Account</button>
                 </form>

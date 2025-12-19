@@ -8,7 +8,7 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class PanelControll extends Controller
+class PanelController extends Controller
 {
     /**
      * Show admin dashboard with statistics
@@ -75,8 +75,17 @@ class PanelControll extends Controller
         $items = Item::with('user')
             ->when($request->input('type'), fn($query) => $query->where('type', $request->input('type')))
             ->when($request->input('status'), fn($query) => $query->where('status', $request->input('status')))
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('category', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%");
+                });
+            })
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.items', compact('items'));
     }

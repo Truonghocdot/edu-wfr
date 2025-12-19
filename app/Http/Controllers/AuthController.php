@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function login()
     {
-        return view('auth.login');
+        return view('user.login');
     }
 
     /**
@@ -44,7 +44,7 @@ class AuthController extends Controller
      */
     public function register()
     {
-        return view('auth.register');
+        return view('user.createAccount');
     }
 
     /**
@@ -57,6 +57,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'phone' => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
+            'student_id' => 'required|string|max:20|unique:users',
         ]);
 
         $user = User::create([
@@ -65,6 +66,7 @@ class AuthController extends Controller
             'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
             'role' => 'user',
+            'student_id' => $validated['student_id'],
         ]);
 
         Auth::login($user);
